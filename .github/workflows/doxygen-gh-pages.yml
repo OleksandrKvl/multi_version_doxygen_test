@@ -18,7 +18,7 @@ on:
       - main
 
 jobs:
-  publis-release-docs:
+  publish-release-docs:
     runs-on: ubuntu-22.04
     if: github.event_name == 'release'
 
@@ -51,3 +51,38 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ${{github.workspace}}/build/doc/docs
         keep_files: true
+
+  publish-git-main-docs:
+    runs-on: ubuntu-22.04
+    if: github.event_name == 'push'
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install deps
+      run:   |
+              sudo apt install -y cmake
+              sudo apt install -y wget
+              wget -nv https://www.doxygen.nl/files/doxygen-1.10.0.linux.bin.tar.gz
+              tar -xzf doxygen-1.10.0.linux.bin.tar.gz
+              echo "$(pwd)/doxygen-1.10.0/bin" >> $GITHUB_PATH
+
+    - name: CMake configuration
+      run:  |
+            cmake -B ${{github.workspace}}/build \
+                  -D CMAKE_C_COMPILER=/usr/bin/gcc-11 \
+                  -D CMAKE_CXX_COMPILER=/usr/bin/g++-11 \
+                  -D MVDT_OVERRIDE_DOCS_DIR git-main
+
+    - name: CMake build
+      run:  |
+            cmake --build ${{github.workspace}}/build \
+                  --target doc
+
+    - name: Deploy to Github Pages
+      uses: peaceiris/actions-gh-pages@v4
+
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ${{github.workspace}}/build/doc/docs/git-main
+        destination_dir: git-main
