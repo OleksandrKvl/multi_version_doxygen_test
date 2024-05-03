@@ -7,6 +7,7 @@ else()
 endif()
 
 set(DOXYGEN_OUTPUT_DIRECTORY "docs")
+set(DOXYGEN_HTML_HEADER "header.html")
 
 doxygen_add_docs(
     doc

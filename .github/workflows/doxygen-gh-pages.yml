@@ -12,10 +12,10 @@ on:
   release:
     types: [released]
   # to create and remove docs/PR<NUMBER>, can be triggered manually
-  pull_request:
-    types: [opened, closed]
-    branches:
-      - main
+  # pull_request:
+  #   types: [opened, edited, closed]
+  #   branches:
+  #     - main
 
 jobs:
   publish-release-docs:
@@ -23,7 +23,7 @@ jobs:
     if: github.event_name == 'release'
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Install deps
       run:   |
@@ -57,7 +57,7 @@ jobs:
     if: github.event_name == 'push'
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Install deps
       run:   |
@@ -86,3 +86,29 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ${{github.workspace}}/build/doc/docs/git-main
         destination_dir: git-main
+    
+    - name: Update version selector
+      uses: actions/checkout@v4
+      with:
+        ref: gh-pages
+
+    - name: Enumerate Directories
+      run: |
+        # Enumerate directories and store them in a variable
+        dirs=$(find . -mindepth 1 -maxdepth 1 -type d)
+    
+        # Create version_selector.html
+        echo '<select id="versionSelector">' > version_selector.html
+        for dir in $dirs; do
+            version=$(basename "$dir")
+            echo "    <option value=\"$version\">$version</option>" >> version_selector.html
+        done
+        echo '</select>' >> version_selector.html
+
+    - name: Commit and Push version_selector.html
+      run: |
+        git config --global user.name 'Oleksandr Koval'
+        git config --global user.email 'OleksandrKvl@users.noreply.github.com'
+        git add version_selector.html
+        git commit -m "Generate version_selector.html"
+        git push origin gh-pages
