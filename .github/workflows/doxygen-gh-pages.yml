@@ -45,15 +45,15 @@ jobs:
                   --target doc
 
     - name: Get latest release directory
-      id: find_subdir
+      id: get_latest_dir
       run: |
-        subdir=$(find ${{github.workspace}}/build/docs -mindepth 1 -maxdepth 1 -type d | head -n 1)
-        echo "::set-output name=latest-dir::$subdir"
+        subdir=$(find ${{github.workspace}}/build/doc/docs -mindepth 1 -maxdepth 1 -type d | head -n 1)
+        echo "dir=$subdir" >> $GITHUB_OUTPUT
 
     - name: Generate redirect HTML
       run: |
-        latest="${{ steps.find_subdir.outputs.latest-dir }}"
-        cat << EOF > ${{github.workspace}}/build/docs/index.html
+        latest="${{ steps.get_latest_dir.outputs.dir }}"
+        cat << EOF > ${{github.workspace}}/build/doc/docs/index.html
         <!DOCTYPE html>
         <html lang="en">
         <head>
