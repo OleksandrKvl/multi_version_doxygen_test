@@ -44,6 +44,29 @@ jobs:
             cmake --build ${{github.workspace}}/build \
                   --target doc
 
+    - name: Get latest release directory
+      id: find_subdir
+      run: |
+        subdir=$(find ${{github.workspace}}/build/docs -mindepth 1 -maxdepth 1 -type d | head -n 1)
+        echo "::set-output name=latest-dir::$subdir"
+
+    - name: Generate redirect HTML
+      run: |
+        latest="${{ steps.find_subdir.outputs.latest-dir }}"
+        cat << EOF > ${{github.workspace}}/build/docs/index.html
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="refresh" content="0; url=$latest/index.html">
+            <title>Redirecting...</title>
+        </head>
+        <body>
+            <p>If you are not redirected automatically, <a href="$latest/index.html">click here</a>.</p>
+        </body>
+        </html>
+        EOF
+
     - name: Deploy to Github Pages
       uses: peaceiris/actions-gh-pages@v4
 
