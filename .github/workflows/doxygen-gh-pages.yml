@@ -72,7 +72,7 @@ jobs:
             cmake -B ${{github.workspace}}/build \
                   -D CMAKE_C_COMPILER=/usr/bin/gcc-11 \
                   -D CMAKE_CXX_COMPILER=/usr/bin/g++-11 \
-                  -D MVDT_OVERRIDE_DOCS_DIR git-main
+                  -D MVDT_OVERRIDE_DOCS_DIR=git-main
 
     - name: CMake build
       run:  |
