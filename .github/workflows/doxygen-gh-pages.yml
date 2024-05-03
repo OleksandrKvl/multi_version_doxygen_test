@@ -100,8 +100,10 @@ jobs:
         # Create version_selector.html
         echo '<select id="versionSelector">' > version_selector.html
         for dir in $dirs; do
-            version=$(basename "$dir")
-            echo "    <option value=\"$version\">$version</option>" >> version_selector.html
+            if [[ "$(basename "$dir")" != .* ]]; then
+                version=$(basename "$dir")
+                echo "    <option value=\"$version\">$version</option>" >> version_selector.html
+            fi
         done
         echo '</select>' >> version_selector.html
 
