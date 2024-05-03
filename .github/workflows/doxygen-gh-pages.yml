@@ -118,7 +118,7 @@ jobs:
     - name: Enumerate Directories
       run: |
         # Enumerate directories and store them in a variable
-        dirs=$(find . -mindepth 1 -maxdepth 1 -type d)
+        dirs=$(find . -mindepth 1 -maxdepth 1 -type d | sort -rV)
     
         # Create version_selector.html
         echo '<select id="versionSelector">' > version_selector.html
