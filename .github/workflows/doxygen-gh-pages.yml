@@ -47,7 +47,7 @@ jobs:
     - name: Get latest release directory
       id: get_latest_dir
       run: |
-        subdir=$(find ${{github.workspace}}/build/doc/docs -mindepth 1 -maxdepth 1 -type d | head -n 1)
+        subdir=$(basename $(find ${{github.workspace}}/build/doc/docs -mindepth 1 -maxdepth 1 -type d | head -n 1))
         echo "dir=$subdir" >> $GITHUB_OUTPUT
 
     - name: Generate redirect HTML
