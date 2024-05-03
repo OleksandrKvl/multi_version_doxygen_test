@@ -6,7 +6,6 @@ else()
     set(DOXYGEN_HTML_OUTPUT "${PROJECT_VERSION}")
 endif()
 
-set(DOXYGEN_HTML_OUTPUT "${PROJECT_VERSION}")
 set(DOXYGEN_OUTPUT_DIRECTORY "docs")
 
 doxygen_add_docs(
