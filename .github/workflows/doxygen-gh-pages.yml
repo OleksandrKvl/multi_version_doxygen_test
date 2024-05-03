@@ -1,0 +1,53 @@
+name: Documentation workflow
+
+permissions:
+  contents: write
+
+on:
+  # to update docs/git-main
+  push:
+    branches:
+      - main
+  # to publish docs/<release-version>
+  release:
+    types: [released]
+  # to create and remove docs/PR<NUMBER>, can be triggered manually
+  pull_request:
+    types: [opened, closed]
+    branches:
+      - main
+
+jobs:
+  publis-release-docs:
+    runs-on: ubuntu-22.04
+    if: github.event_name == 'release'
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install deps
+      run:   |
+              sudo apt install -y cmake
+              sudo apt install -y wget
+              wget -nv https://www.doxygen.nl/files/doxygen-1.10.0.linux.bin.tar.gz
+              tar -xzf doxygen-1.10.0.linux.bin.tar.gz
+              echo "$(pwd)/doxygen-1.10.0/bin" >> $GITHUB_PATH
+
+    - name: CMake configuration
+      run:  |
+            cmake -B ${{github.workspace}}/build \
+                  -D CMAKE_C_COMPILER=/usr/bin/gcc-11 \
+                  -D CMAKE_CXX_COMPILER=/usr/bin/g++-11
+
+    - name: CMake build
+      run:  |
+            cmake --build ${{github.workspace}}/build \
+                  --target doc
+
+    - name: Deploy to Github Pages
+      uses: peaceiris/actions-gh-pages@v4
+
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ${{github.workspace}}/build/doc/docs
+        keep_files: true
