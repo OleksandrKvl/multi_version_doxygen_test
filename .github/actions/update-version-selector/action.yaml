@@ -5,13 +5,13 @@ inputs:
     description: 'HTML file name'
     required: true
   selector-id:
-    description: `select element id`
+    description: 'select element id'
     required: true
   user-name:
-    description: `git user.name value`
+    description: 'git user.name value'
     required: true
   user-email:
-    description: `git user.email value`
+    description: 'git user.email value'
     required: true
 
 runs:
