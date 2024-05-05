@@ -3,6 +3,13 @@ name: Documentation workflow
 permissions:
   contents: write
 
+env:
+  BUILD_DIR: ${{github.workspace}}/build
+  SELECTOR_FILE_NAME: version_selector.html
+  SELECTOR_ID: versionSelector
+  GIT_USER_NAME: 'Oleksandr Koval'
+  GIT_USER_EMAIL: 'OleksandrKvl@users.noreply.github.com'
+
 on:
   # to update docs/git-main
   push:
@@ -18,122 +25,106 @@ on:
   #     - main
 
 jobs:
-  publish-release-docs:
+  publish-docs:
     runs-on: ubuntu-22.04
-    if: github.event_name == 'release'
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Build documentation
+        id: build-docs
+        uses: ./.github/actions/build-docs
+        with:
+          build-dir: $BUILD_DIR
 
-    - name: Install deps
-      run:   |
-              sudo apt install -y cmake
-              sudo apt install -y wget
-              wget -nv https://www.doxygen.nl/files/doxygen-1.10.0.linux.bin.tar.gz
-              tar -xzf doxygen-1.10.0.linux.bin.tar.gz
-              echo "$(pwd)/doxygen-1.10.0/bin" >> $GITHUB_PATH
+      - name: Update redirect HTML
+        if: github.event_name == 'release'
+        uses: ./github/actions/generate-redirect-page
+        with:
+          output-file: $BUILD_DIR/doc/docs/index.html
+          target-url: ${{ steps.build-docs.outputs.version }}/index.html
 
-    - name: CMake configuration
-      run:  |
-            cmake -B ${{github.workspace}}/build \
-                  -D CMAKE_C_COMPILER=/usr/bin/gcc-11 \
-                  -D CMAKE_CXX_COMPILER=/usr/bin/g++-11
+      - name: Deploy release docs
+        if: github.event_name == 'release'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: $BUILD_DIR/doc/docs
+          destination_dir: ${{ steps.build-docs.outputs.version }}
 
-    - name: CMake build
-      run:  |
-            cmake --build ${{github.workspace}}/build \
-                  --target doc
+      - name: Deploy git-main docs
+        if: github.event_name == 'push'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: $BUILD_DIR/doc/docs/${{ steps.build-docs.outputs.version }}
+          destination_dir: git-main
 
-    - name: Get latest release directory
-      id: get_latest_dir
-      run: |
-        subdir=$(basename $(find ${{github.workspace}}/build/doc/docs -mindepth 1 -maxdepth 1 -type d | head -n 1))
-        echo "dir=$subdir" >> $GITHUB_OUTPUT
+      - name: Update version selector
+        uses: ./.github/actions/update-version-selector
+        with:
+          selector-file-name: $SELECTOR_FILE_NAME
+          selector-id: $SELECTOR_ID
+          user-name: '$GIT_USER_NAME'
+          user-email: '$GIT_USER_EMAIL'
 
-    - name: Generate redirect HTML
-      run: |
-        latest="${{ steps.get_latest_dir.outputs.dir }}"
-        cat << EOF > ${{github.workspace}}/build/doc/docs/index.html
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta http-equiv="refresh" content="0; url=$latest/index.html">
-            <title>Redirecting...</title>
-        </head>
-        <body>
-            <p>If you are not redirected automatically, <a href="$latest/index.html">click here</a>.</p>
-        </body>
-        </html>
-        EOF
+  publish-release-docs:
+    runs-on: ubuntu-22.04
+    if: false
+    # if: github.event_name == 'release'
 
-    - name: Deploy to Github Pages
-      uses: peaceiris/actions-gh-pages@v4
+    steps:
+      - id: build-docs
+        uses: ./.github/actions/build-docs
+        with:
+          build-dir: $BUILD_DIR
 
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ${{github.workspace}}/build/doc/docs
-        keep_files: true
+      - name: Generate redirect HTML
+        uses: ./github/actions/generate-redirect-page
+        with:
+          output-file: $BUILD_DIR/doc/docs/index.html
+          target-url: ${{ steps.build-docs.outputs.version }}/index.html
+
+      - name: Deploy to Github Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: $BUILD_DIR/doc/docs
+          destination_dir: ${{ steps.build-docs.outputs.version }}
+
+      - name: Update version selector
+        uses: ./.github/actions/update-version-selector
+        with:
+          selector-file-name: $SELECTOR_FILE_NAME
+          selector-id: $SELECTOR_ID
+          user-name: '$GIT_USER_NAME'
+          user-email: '$GIT_USER_EMAIL'
 
   publish-git-main-docs:
     runs-on: ubuntu-22.04
-    if: github.event_name == 'push'
+    if: false
+    # if: github.event_name == 'push'
 
     steps:
-    - uses: actions/checkout@v4
+      - id: build-docs
+        uses: ./.github/actions/build-docs
+        with:
+          build-dir: $BUILD_DIR
 
-    - name: Install deps
-      run:   |
-              sudo apt install -y cmake
-              sudo apt install -y wget
-              wget -nv https://www.doxygen.nl/files/doxygen-1.10.0.linux.bin.tar.gz
-              tar -xzf doxygen-1.10.0.linux.bin.tar.gz
-              echo "$(pwd)/doxygen-1.10.0/bin" >> $GITHUB_PATH
+      - name: Deploy to Github Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: $BUILD_DIR/doc/docs/${{ steps.build-docs.outputs.version }}
+          destination_dir: git-main
 
-    - name: CMake configuration
-      run:  |
-            cmake -B ${{github.workspace}}/build \
-                  -D CMAKE_C_COMPILER=/usr/bin/gcc-11 \
-                  -D CMAKE_CXX_COMPILER=/usr/bin/g++-11 \
-                  -D MVDT_OVERRIDE_DOCS_DIR=git-main
+      - name: Update version selector
+        uses: ./.github/actions/update-version-selector
+        with:
+          selector-file-name: $SELECTOR_FILE_NAME
+          selector-id: $SELECTOR_ID
+          user-name: '$GIT_USER_NAME'
+          user-email: '$GIT_USER_EMAIL'
 
-    - name: CMake build
-      run:  |
-            cmake --build ${{github.workspace}}/build \
-                  --target doc
-
-    - name: Deploy to Github Pages
-      uses: peaceiris/actions-gh-pages@v4
-
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ${{github.workspace}}/build/doc/docs/git-main
-        destination_dir: git-main
-    
-    - name: Update version selector
-      uses: actions/checkout@v4
-      with:
-        ref: gh-pages
-
-    - name: Enumerate Directories
-      run: |
-        # Enumerate directories and store them in a variable
-        dirs=$(find . -mindepth 1 -maxdepth 1 -type d | sort -rV)
-    
-        # Create version_selector.html
-        echo '<select id="versionSelector">' > version_selector.html
-        for dir in $dirs; do
-            if [[ "$(basename "$dir")" != .* ]]; then
-                version=$(basename "$dir")
-                echo "    <option value=\"$version\">$version</option>" >> version_selector.html
-            fi
-        done
-        echo '</select>' >> version_selector.html
-
-    - name: Commit and Push version_selector.html
-      run: |
-        git config --global user.name 'Oleksandr Koval'
-        git config --global user.email 'OleksandrKvl@users.noreply.github.com'
-        git add version_selector.html
-        git commit -m "Generate version_selector.html"
-        git push origin gh-pages
+# TODO: can we make steps depend on each other, to avoid their duplication?
+# build-docs -> deploy -> update-version-selector
+# I think we can create another action with optional destination_dir parameter
+# then the only difference between them two will be redirect generation

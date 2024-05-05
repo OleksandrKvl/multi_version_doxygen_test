@@ -1,0 +1,45 @@
+name: 'update-version-selector'
+description: 'Updates version selector'
+inputs:
+  selector-file-name:
+    description: 'HTML file name'
+    required: true
+  selector-id:
+    description: `select element id`
+    required: true
+  user-name:
+    description: `git user.name value`
+    required: true
+  user-email:
+    description: `git user.email value`
+    required: true
+
+runs:
+  using: "composite"
+    - name: Pull gh-pages
+      uses: actions/checkout@v4
+      with:
+        ref: gh-pages
+
+    - name: Discover versions
+      run: |
+        # Enumerate directories and store them in a variable
+        dirs=$(find . -mindepth 1 -maxdepth 1 -type d | sort -rV)
+    
+        # Create HTML
+        echo '<select id="${{ inputs.selector-id }}">' > ${{ inputs.selector-file-name }}
+        for dir in $dirs; do
+            if [[ "$(basename "$dir")" != .* ]]; then
+                version=$(basename "$dir")
+                echo "    <option value=\"$version\">$version</option>" >> ${{ inputs.selector-file-name }}
+            fi
+        done
+        echo '</select>' >> ${{ inputs.selector-file-name }}
+
+    - name: Push selector
+      run: |
+        git config --global user.name '${{ inputs.user-name }}'
+        git config --global user.email '${{ inputs.user-email }}'
+        git add ${{ inputs.selector-file-name }}
+        git commit -m "Update version selector"
+        git push origin gh-pages
