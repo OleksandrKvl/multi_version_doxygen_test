@@ -16,6 +16,7 @@ inputs:
 
 runs:
   using: "composite"
+  steps:
     - name: Pull gh-pages
       uses: actions/checkout@v4
       with:
