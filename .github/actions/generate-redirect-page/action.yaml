@@ -11,6 +11,7 @@ runs:
   using: "composite"
   steps:
       - name: Generate redirect HTML
+        shell: bash
         run: |
           cat << EOF > ${{ inputs.output-file }}
           <!DOCTYPE html>

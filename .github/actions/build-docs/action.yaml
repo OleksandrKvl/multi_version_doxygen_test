@@ -15,6 +15,7 @@ runs:
     - uses: actions/checkout@v4
 
     - name: Install deps
+      shell: bash
       run:   |
               sudo apt install -y cmake
               sudo apt install -y wget
@@ -23,15 +24,18 @@ runs:
               echo "$(pwd)/doxygen-1.10.0/bin" >> $GITHUB_PATH
 
     - name: CMake configuration
+      shell: bash
       run:  |
             cmake -B ${{ inputs.build-dir }}
 
     - name: CMake build
+      shell: bash
       run:  |
             cmake --build ${{ inputs.build-dir }} --target doc
 
     - name: Get docs version
       id: get-docs-version
+      shell: bash
       run: |
         subdir=$(basename $(find ${{ inputs.build-dir }}/doc/docs -mindepth 1 -maxdepth 1 -type d | head -n 1))
         echo "version=$subdir" >> $GITHUB_OUTPUT
