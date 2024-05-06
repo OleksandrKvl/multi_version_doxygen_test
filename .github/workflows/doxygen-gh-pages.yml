@@ -108,11 +108,15 @@ jobs:
 
       - name: Push selector
         run: |
-          git config --global user.name 'GIT_USER_NAME'
-          git config --global user.email 'GIT_USER_EMAIL'
-          git add $SELECTOR_FILE_NAME
-          git commit -m "Update version selector"
-          git push origin gh-pages
+          git config --global user.name '$GIT_USER_NAME'
+          git config --global user.email '$GIT_USER_EMAIL'
+          if [[ -n "$(git diff --exit-code $SELECTOR_FILE_NAME)" ]]; then
+            git add $SELECTOR_FILE_NAME
+            git commit -m "Update version selector"
+            git push origin gh-pages
+          else
+            echo "$SELECTOR_FILE_NAME has not been changed. Skipping push."
+          fi
 
   publish-docs-old:
     runs-on: ubuntu-22.04
