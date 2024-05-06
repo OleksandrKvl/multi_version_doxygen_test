@@ -89,8 +89,8 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # publish_dir: $BUILD_DIR/doc/docs/${{ steps.get-docs-version.outputs.version }}
-          publish_dir: ${{github.workspace}}/build/doc/docs/${{ steps.get-docs-version.outputs.version }}
+          publish_dir: ${{env.BUILD_DIR}}/doc/docs/${{ steps.get-docs-version.outputs.version }}
+          # publish_dir: ${{github.workspace}}/build/doc/docs/${{ steps.get-docs-version.outputs.version }}
           destination_dir: git-main
 
       # Update version_selector.html
