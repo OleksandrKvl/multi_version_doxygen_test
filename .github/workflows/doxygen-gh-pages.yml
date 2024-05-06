@@ -30,6 +30,96 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install deps
+        shell: bash
+        run:   |
+                sudo apt install -y cmake
+                sudo apt install -y wget
+                wget -nv https://www.doxygen.nl/files/doxygen-1.10.0.linux.bin.tar.gz
+                tar -xzf doxygen-1.10.0.linux.bin.tar.gz
+                echo "$(pwd)/doxygen-1.10.0/bin" >> $GITHUB_PATH
+
+      - name: CMake configure
+        run:  cmake -B $BUILD_DIR
+
+      - name: CMake build
+        run:  cmake --build $BUILD_DIR --target doc
+
+      - name: Get docs version
+        id: get-docs-version
+        run: |
+          subdir=$(basename $(find $BUILD_DIR/doc/docs -mindepth 1 -maxdepth 1 -type d | head -n 1))
+          echo "version=$subdir" >> $GITHUB_OUTPUT
+
+      - name: Generate redirect HTML
+        if: github.event_name == 'release'
+        run: |
+          cat << EOF > $BUILD_DIR/doc/docs/index.html
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta http-equiv="refresh" content="0; url=${{ steps.get-docs-version.outputs.version }}/index.html">
+              <title>Redirecting...</title>
+          </head>
+          <body>
+              <p>If you are not redirected automatically, <a href="${{ steps.get-docs-version.outputs.version }}/index.html">click here</a>.</p>
+          </body>
+          </html>
+          EOF
+
+      - name: Deploy release docs
+        if: github.event_name == 'release'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: $BUILD_DIR/doc/docs
+          destination_dir: ${{ steps.get-docs-version.outputs.version }}
+
+      - name: Deploy git-main docs
+        if: github.event_name == 'push'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: $BUILD_DIR/doc/docs/${{ steps.get-docs-version.outputs.version }}
+          destination_dir: git-main
+
+      # Update version_selector.html
+      - name: Pull gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+
+      - name: Discover versions
+        run: |
+          # Enumerate directories and store them in a variable
+          dirs=$(find . -mindepth 1 -maxdepth 1 -type d | sort -rV)
+      
+          # Create HTML
+          echo '<select id="$SELECTOR_ID">' > $SELECTOR_FILE_NAME
+          for dir in $dirs; do
+              if [[ "$(basename "$dir")" != .* ]]; then
+                  version=$(basename "$dir")
+                  echo "    <option value=\"$version\">$version</option>" >> $SELECTOR_FILE_NAME
+              fi
+          done
+          echo '</select>' >> $SELECTOR_FILE_NAME
+
+      - name: Push selector
+        run: |
+          git config --global user.name 'GIT_USER_NAME'
+          git config --global user.email 'GIT_USER_EMAIL'
+          git add $SELECTOR_FILE_NAME
+          git commit -m "Update version selector"
+          git push origin gh-pages
+
+  publish-docs-old:
+    runs-on: ubuntu-22.04
+    if: false
+
+    steps:
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
 
