@@ -52,7 +52,11 @@ jobs:
           subdir=$(basename $(find $BUILD_DIR/doc/docs -mindepth 1 -maxdepth 1 -type d | head -n 1))
           echo "version=$subdir" >> $GITHUB_OUTPUT
           # TODO: remove after test
+          echo $(find $BUILD_DIR/doc/docs -mindepth 1 -maxdepth 1 -type d | head -n 1)
           echo $subdir
+
+      - name: Debug output
+        run: echo ${{ steps.get-docs-version.outputs.version }}
 
       - name: Update redirect HTML
         if: github.event_name == 'release'
