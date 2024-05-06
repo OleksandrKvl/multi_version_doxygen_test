@@ -55,6 +55,7 @@ jobs:
       - name: Update redirect HTML
         if: github.event_name == 'release'
         run: |
+          mkdir $BUILD_DIR/doc/docs/redirect
           cat << EOF > $BUILD_DIR/doc/docs/redirect/index.html
           <!DOCTYPE html>
           <html lang="en">
@@ -83,7 +84,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ${{ env.BUILD_DIR }}/doc/docs/redirect
-          # destination_dir: 
+          keep_files: true
 
       - name: Deploy git-main docs
         if: github.event_name == 'push'
