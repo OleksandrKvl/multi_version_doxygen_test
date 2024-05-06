@@ -51,18 +51,11 @@ jobs:
         run: |
           subdir=$(basename $(find $BUILD_DIR/doc/docs -mindepth 1 -maxdepth 1 -type d | head -n 1))
           echo "version=$subdir" >> $GITHUB_OUTPUT
-          # TODO: remove after test
-          echo $(find $BUILD_DIR/doc/docs -mindepth 1 -maxdepth 1 -type d | head -n 1)
-          echo $subdir
-
-      - name: Debug output
-        run: echo ${{ steps.get-docs-version.outputs.version }}
 
       - name: Update redirect HTML
         if: github.event_name == 'release'
         run: |
-          echo ${{ steps.get-docs-version.outputs.version }}
-          cat << EOF > $BUILD_DIR/doc/docs/index.html
+          cat << EOF > $BUILD_DIR/doc/docs/redirect/index.html
           <!DOCTYPE html>
           <html lang="en">
           <head>
@@ -81,8 +74,16 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ${{ env.BUILD_DIR }}/doc/docs
+          publish_dir: ${{ env.BUILD_DIR }}/doc/docs/${{ steps.get-docs-version.outputs.version }}
           destination_dir: ${{ steps.get-docs-version.outputs.version }}
+
+      - name: Deploy redirect page
+        if: github.event_name == 'release'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ${{ env.BUILD_DIR }}/doc/docs/redirect
+          # destination_dir: 
 
       - name: Deploy git-main docs
         if: github.event_name == 'push'
@@ -125,6 +126,8 @@ jobs:
             echo "$SELECTOR_FILE_NAME has not been changed. Skipping push."
           fi
 
+# ------------------------------------------------------------------------------
+          
   publish-docs-old:
     runs-on: ubuntu-22.04
     if: false
