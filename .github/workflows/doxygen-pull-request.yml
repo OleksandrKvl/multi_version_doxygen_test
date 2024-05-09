@@ -13,14 +13,13 @@ env:
 on:
   # to create and remove docs/PR-<NUMBER>
   pull_request:
-    types: [labeled, opened, synchronize, closed]
+    types: [labeled, synchronize, closed]
     branches:
       - main
 
 jobs:
   publish-pr-docs:
-    # seems that this is triggered multiple times?
-    if: ${{ (github.event.action != 'closed') && ((github.event.action == 'labeled' && github.event.label.name == 'documentation') || contains(github.event.pull_request.labels.*.name, 'documentation')) }}
+    if: ${{ (github.event.action != 'closed') && contains(github.event.pull_request.labels.*.name, 'documentation') }}
     runs-on: ubuntu-22.04
 
     steps:
