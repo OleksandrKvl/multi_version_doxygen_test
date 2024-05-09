@@ -1,6 +1,9 @@
 name: 'update-version-selector'
 description: 'Updates version selector'
-# inputs:
+inputs:
+  github-token:
+    description: 'abc'
+    required: true
   # selector-file-name:
   #   description: 'HTML file name'
   #   required: true
@@ -37,6 +40,6 @@ runs:
     - name: Deploy version_selector.html
       uses: peaceiris/actions-gh-pages@v4
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ inputs.github-token }}
         publish_dir: selector-dir
         keep_files: true

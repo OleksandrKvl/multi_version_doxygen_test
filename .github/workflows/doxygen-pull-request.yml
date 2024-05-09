@@ -57,6 +57,8 @@ jobs:
 
       - name: Update version selector
         uses: ./.github/actions/update-version-selector
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       # Update version_selector.html
       # - name: Pull gh-pages
       #   uses: actions/checkout@v4
@@ -101,6 +103,8 @@ jobs:
 
       - name: Update version selector
         uses: ./.github/actions/update-version-selector
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       # Update version_selector.html
       # - name: Pull gh-pages
