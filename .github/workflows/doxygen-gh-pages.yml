@@ -9,8 +9,6 @@ env:
   SELECTOR_DIR: ${{github.workspace}}/version_selector
   SELECTOR_FILE_PATH: $SELECTOR_DIR/$SELECTOR_FILE_NAME
   SELECTOR_ID: versionSelector
-  GIT_USER_NAME: 'Oleksandr Koval'
-  GIT_USER_EMAIL: 'OleksandrKvl@users.noreply.github.com'
 
 on:
   # to update docs/git-main
@@ -126,15 +124,3 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ${{ env.SELECTOR_DIR }}
           keep_files: true
-
-      # - name: Push selector
-      #   run: |
-      #     git config --global user.name $GIT_USER_NAME
-      #     git config --global user.email $GIT_USER_EMAIL
-      #     if [[ -n "$(git diff --exit-code $SELECTOR_FILE_NAME)" ]]; then
-      #       git add $SELECTOR_FILE_NAME
-      #       git commit -m "Update version selector"
-      #       git push origin gh-pages
-      #     else
-      #       echo "$SELECTOR_FILE_NAME has not been changed. Skipping push."
-      #     fi
