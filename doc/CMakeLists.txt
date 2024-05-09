@@ -8,6 +8,7 @@ endif()
 
 set(DOXYGEN_OUTPUT_DIRECTORY "docs")
 set(DOXYGEN_HTML_HEADER "header.html")
+set(DOXYGEN_HTML_EXTRA_FILES "version_selector_handler.js")
 
 doxygen_add_docs(
     doc

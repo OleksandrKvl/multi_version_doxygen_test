@@ -32,37 +32,7 @@
   $darkmode
   <link href="$relpath^$stylesheet" rel="stylesheet" type="text/css" />
   $extrastylesheet
-  <script>
-    $(function() {
-        // Load version selector HTML using AJAX
-        $.get('/version_selector.html', function(data) {
-            // Inject version selector HTML into the page
-            $('#projectnumber').html(data);
-
-              // Event listener to handle version selection
-            document.getElementById('versionSelector').addEventListener('change', function() {
-                var selectedVersion = this.value;
-                // Get the current page path
-                var currentPath = window.location.pathname;
-
-                // Extract the current version from the path
-                var currentVersion = currentPath.split('/')[1];
-
-                // Replace the current version with the selected version in the path
-                var newPath = currentPath.replace(currentVersion, selectedVersion);
-
-                // Redirect to the corresponding page of the selected version
-                window.location.href = newPath;
-            });
-
-            // Get the current version from the URL
-            var currentVersion = window.location.pathname.split('/')[1];
-            
-            // Set the selected option based on the current version
-            $('#versionSelector').val(currentVersion);
-        });
-    });
-</script>
+  <script type="text/javascript" src="$relpath^version_selector_handler.js"></script>
 </head>
 
 <body>
