@@ -105,8 +105,7 @@ jobs:
         run: |
           mkdir $SELECTOR_DIR
           # Enumerate directories and store them in a variable
-          cd gh-pages
-          dirs=$(find . -mindepth 1 -maxdepth 1 -type d | sort -rV)
+          dirs=$(find gh-pages -mindepth 1 -maxdepth 1 -type d | sort -rV)
       
           # Create HTML
           echo '<select id="${{ env.SELECTOR_ID }}">' > ${{ env.SELECTOR_FILE_PATH }}
