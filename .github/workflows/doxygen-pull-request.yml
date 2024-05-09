@@ -19,7 +19,7 @@ on:
 
 jobs:
   publish-pr-docs:
-    if: ${{ github.event.label.name == 'documentation' && github.event_name != 'closed' }}
+    if: ${{ github.event.label.name == 'documentation' && github.event.action != 'closed' }}
     runs-on: ubuntu-22.04
 
     steps:
@@ -86,7 +86,7 @@ jobs:
           keep_files: true
 
   remove-pr-docs:
-    if: ${{ github.event.label.name == 'documentation' && github.event_name == 'closed' }}
+    if: ${{ github.event.label.name == 'documentation' && github.event.action == 'closed' }}
     runs-on: ubuntu-22.04
     
     steps:
