@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.11)
 
 project(multi_version_doxygen_test
-    VERSION 1.6.2
+    VERSION 1.6.3
     LANGUAGES CXX
 )
 
