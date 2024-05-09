@@ -6,7 +6,7 @@ permissions:
 env:
   BUILD_DIR: ${{github.workspace}}/build
   SELECTOR_FILE_NAME: version_selector.html
-  SELECTOR_DIR: version_selector
+  SELECTOR_DIR: ${{github.workspace}}/version_selector
   SELECTOR_FILE_PATH: $SELECTOR_DIR/$SELECTOR_FILE_NAME
   SELECTOR_ID: versionSelector
   GIT_USER_NAME: 'Oleksandr Koval'
