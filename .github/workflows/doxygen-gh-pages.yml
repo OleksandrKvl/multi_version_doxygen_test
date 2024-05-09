@@ -104,6 +104,7 @@ jobs:
 
       - name: Discover versions
         run: |
+          mkdir $SELECTOR_DIR
           # Enumerate directories and store them in a variable
           dirs=$(find . -mindepth 1 -maxdepth 1 -type d | sort -rV)
       
