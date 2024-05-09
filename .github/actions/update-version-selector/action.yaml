@@ -1,6 +1,6 @@
 name: 'update-version-selector'
 description: 'Updates version selector'
-inputs:
+# inputs:
   # selector-file-name:
   #   description: 'HTML file name'
   #   required: true
@@ -17,26 +17,26 @@ runs:
         ref: gh-pages
         path: gh-pages
 
-      - name: Discover versions
-        shell: bash
-        run: |
-          mkdir selector-dir
-          # Enumerate directories and store them in a variable
-          dirs=$(find gh-pages -mindepth 1 -maxdepth 1 -type d | sort -rV)
-      
-          # Create HTML
-          echo '<select id="versionSelector">' > selector-dir/version_selector.html
-          for dir in $dirs; do
-              if [[ "$(basename "$dir")" != .* ]]; then
-                  version=$(basename "$dir")
-                  echo "    <option value=\"$version\">$version</option>" >> selector-dir/version_selector.html
-              fi
-          done
-          echo '</select>' >> selector-dir/version_selector.html
+    - name: Discover versions
+      shell: bash
+      run: |
+        mkdir selector-dir
+        # Enumerate directories and store them in a variable
+        dirs=$(find gh-pages -mindepth 1 -maxdepth 1 -type d | sort -rV)
+    
+        # Create HTML
+        echo '<select id="versionSelector">' > selector-dir/version_selector.html
+        for dir in $dirs; do
+            if [[ "$(basename "$dir")" != .* ]]; then
+                version=$(basename "$dir")
+                echo "    <option value=\"$version\">$version</option>" >> selector-dir/version_selector.html
+            fi
+        done
+        echo '</select>' >> selector-dir/version_selector.html
 
-      - name: Deploy version_selector.html
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: selector-dir
-          keep_files: true
+    - name: Deploy version_selector.html
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: selector-dir
+        keep_files: true
