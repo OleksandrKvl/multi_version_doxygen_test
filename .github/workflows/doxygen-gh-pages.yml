@@ -101,11 +101,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: gh-pages
+          path: gh-pages
 
       - name: Discover versions
         run: |
           mkdir $SELECTOR_DIR
           # Enumerate directories and store them in a variable
+          cd gh-pages
           dirs=$(find . -mindepth 1 -maxdepth 1 -type d | sort -rV)
       
           # Create HTML
