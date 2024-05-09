@@ -1,4 +1,4 @@
-name: Documentation workflow
+name: PR documentation workflow
 
 permissions:
   contents: write
@@ -20,8 +20,11 @@ on:
 jobs:
   publish-pr-docs:
     # TODO: fix, now it's triggered on any PR's updates
+    # we need separate conditions for different events as they contain different
+    # members
     # if: ${{ github.event.label.name == 'documentation' && github.event.action != 'closed' || github.event.action == 'synchronize' }}
-    if: ${{ contains(github.event.pull_request.pull_request.labels.*.name, 'documentation') && github.event.action != 'closed' }}
+    # if: ${{ contains(github.event.pull_request.pull_request.labels.*.name, 'documentation') && github.event.action != 'closed' }}
+    if: ${{ (github.event.action != 'closed') && ((github.event.action == 'labeled' && github.event.label.name == 'documentation') || contains(github.event.pull_request.labels.*.name, 'documentation')) }}
     runs-on: ubuntu-22.04
 
     steps:
@@ -88,7 +91,7 @@ jobs:
           keep_files: true
 
   remove-pr-docs:
-    if: ${{ contains(github.event.pull_request.pull_request.labels.*.name, 'documentation') && github.event.action == 'closed' }}
+    if: ${{ (github.event.action != 'closed') &&  contains(github.event.pull_request.labels.*.name, 'documentation') }}
     runs-on: ubuntu-22.04
     
     steps:
