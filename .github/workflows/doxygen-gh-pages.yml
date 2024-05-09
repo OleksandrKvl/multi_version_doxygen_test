@@ -6,6 +6,8 @@ permissions:
 env:
   BUILD_DIR: ${{github.workspace}}/build
   SELECTOR_FILE_NAME: version_selector.html
+  SELECTOR_DIR: version_selector
+  SELECTOR_FILE_PATH: $SELECTOR_DIR/$SELECTOR_FILE_NAME
   SELECTOR_ID: versionSelector
   GIT_USER_NAME: 'Oleksandr Koval'
   GIT_USER_EMAIL: 'OleksandrKvl@users.noreply.github.com'
@@ -18,6 +20,11 @@ on:
   # to publish docs/<release-version>
   release:
     types: [released]
+  # to create and remove docs/PR<NUMBER>, can be triggered manually
+  # pull_request:
+  #   types: [opened, edited, closed]
+  #   branches:
+  #     - main
 
 jobs:
   publish-docs:
@@ -101,23 +108,30 @@ jobs:
           dirs=$(find . -mindepth 1 -maxdepth 1 -type d | sort -rV)
       
           # Create HTML
-          echo '<select id="$SELECTOR_ID">' > $SELECTOR_FILE_NAME
+          echo '<select id="${{ env.SELECTOR_ID }}">' > ${{ env.SELECTOR_FILE_PATH }}
           for dir in $dirs; do
               if [[ "$(basename "$dir")" != .* ]]; then
                   version=$(basename "$dir")
-                  echo "    <option value=\"$version\">$version</option>" >> $SELECTOR_FILE_NAME
+                  echo "    <option value=\"$version\">$version</option>" >> ${{ env.SELECTOR_FILE_PATH }}
               fi
           done
-          echo '</select>' >> $SELECTOR_FILE_NAME
+          echo '</select>' >> ${{ env.SELECTOR_FILE_PATH }}
 
-      - name: Push selector
-        run: |
-          git config --global user.name $GIT_USER_NAME
-          git config --global user.email $GIT_USER_EMAIL
-          if [[ -n "$(git diff --exit-code $SELECTOR_FILE_NAME)" ]]; then
-            git add $SELECTOR_FILE_NAME
-            git commit -m "Update version selector"
-            git push origin gh-pages
-          else
-            echo "$SELECTOR_FILE_NAME has not been changed. Skipping push."
-          fi
+      - name: Deploy version_selector.html
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ${{ env.SELECTOR_DIR }}
+          keep_files: true
+
+      # - name: Push selector
+      #   run: |
+      #     git config --global user.name $GIT_USER_NAME
+      #     git config --global user.email $GIT_USER_EMAIL
+      #     if [[ -n "$(git diff --exit-code $SELECTOR_FILE_NAME)" ]]; then
+      #       git add $SELECTOR_FILE_NAME
+      #       git commit -m "Update version selector"
+      #       git push origin gh-pages
+      #     else
+      #       echo "$SELECTOR_FILE_NAME has not been changed. Skipping push."
+      #     fi
