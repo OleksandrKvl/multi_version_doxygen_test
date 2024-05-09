@@ -11,7 +11,7 @@ env:
   SELECTOR_ID: versionSelector
 
 on:
-  # to create and remove docs/PR<NUMBER>, can be triggered manually
+  # to create and remove docs/PR-<NUMBER>
   pull_request:
     types: [labeled, opened, synchronize, closed]
     branches:
@@ -19,11 +19,6 @@ on:
 
 jobs:
   publish-pr-docs:
-    # TODO: fix, now it's triggered on any PR's updates
-    # we need separate conditions for different events as they contain different
-    # members
-    # if: ${{ github.event.label.name == 'documentation' && github.event.action != 'closed' || github.event.action == 'synchronize' }}
-    # if: ${{ contains(github.event.pull_request.pull_request.labels.*.name, 'documentation') && github.event.action != 'closed' }}
     if: ${{ (github.event.action != 'closed') && ((github.event.action == 'labeled' && github.event.label.name == 'documentation') || contains(github.event.pull_request.labels.*.name, 'documentation')) }}
     runs-on: ubuntu-22.04
 
@@ -91,7 +86,7 @@ jobs:
           keep_files: true
 
   remove-pr-docs:
-    if: ${{ (github.event.action != 'closed') &&  contains(github.event.pull_request.labels.*.name, 'documentation') }}
+    if: ${{ (github.event.action == 'closed') &&  contains(github.event.pull_request.labels.*.name, 'documentation') }}
     runs-on: ubuntu-22.04
     
     steps:
