@@ -33,7 +33,7 @@ runs:
       shell: bash
       run: |
         git fetch origin ${{ inputs.docs_branch }}
-        dirs=$(git ls-tree --name-only -d origin/${{ inputs.docs_branch }})
+        dirs=$(git ls-tree --name-only -d origin/${{ inputs.docs_branch }} | sort -rV)
         echo "counter=$(echo "$dirs" | wc -l | xargs)" >> $GITHUB_OUTPUT
 
         mkdir ${{ inputs.temp_dir }}
