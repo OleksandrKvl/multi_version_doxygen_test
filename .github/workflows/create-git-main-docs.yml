@@ -34,6 +34,14 @@ jobs:
           destination_dir: git-main
 
       - name: Update version selector
+        id: update-version-selector
         uses: ./.github/actions/update-version-selector
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create redirect page if there are no releases
+        if: ${{ steps.update-version-selector.outputs.versions_counter == 1}}
+        uses: ./.github/actions/update-redirect-page
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          target_url: git-main/index.html

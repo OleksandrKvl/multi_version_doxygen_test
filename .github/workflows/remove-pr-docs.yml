@@ -13,7 +13,7 @@ jobs:
   remove-pr-docs:
     if: ${{ contains(github.event.pull_request.labels.*.name, 'documentation') }}
     runs-on: ubuntu-22.04
-    
+
     steps:
       - name: Remove PR docs
         uses: peaceiris/actions-gh-pages@v4

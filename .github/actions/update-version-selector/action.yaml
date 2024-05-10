@@ -10,15 +10,21 @@ inputs:
   # selector-id:
   #   description: 'select element id'
   #   required: true
+outputs:
+  versions_counter:
+    description: "Number of existing versions"
+    value: ${{ steps.discover-versions.outputs.counter }}
 
 runs:
   using: "composite"
   steps:
     - name: Discover versions
+      id: discover-versions
       shell: bash
       run: |
         git fetch origin gh-pages
         dirs=$(git ls-tree --name-only -d origin/gh-pages)
+        echo "counter=$(echo "$dirs" | wc -l | xargs)" >> $GITHUB_OUTPUT
 
         mkdir selector-dir
         # Create HTML
