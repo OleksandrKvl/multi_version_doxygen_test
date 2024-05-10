@@ -14,18 +14,12 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Pull gh-pages
-      uses: actions/checkout@v4
-      with:
-        ref: gh-pages
-        path: gh-pages
-
     - name: Discover versions
       shell: bash
       run: |
         mkdir selector-dir
         # Enumerate directories and store them in a variable
-        dirs=$(find gh-pages -mindepth 1 -maxdepth 1 -type d | sort -rV)
+        dirs=$(git ls-tree --name-only -d origin/gh-pages)
     
         # Create HTML
         echo '<select id="versionSelector">' > selector-dir/version_selector.html
