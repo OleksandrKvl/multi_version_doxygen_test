@@ -1,7 +1,7 @@
 name: 'build-docs'
 description: 'Builds documentation using Doxygen'
 inputs:
-  build-dir:
+  build_dir:
     description: 'Build directory'
     required: false
     default: 'build'
@@ -24,15 +24,15 @@ runs:
 
     - name: CMake configuration
       shell: bash
-      run:  cmake -B ${{ inputs.build-dir }}
+      run:  cmake -B ${{ inputs.build_dir }}
 
     - name: CMake build
       shell: bash
-      run:  cmake --build ${{ inputs.build-dir }} --target doc
+      run:  cmake --build ${{ inputs.build_dir }} --target doc
 
     - name: Get docs version
       id: get-docs-version
       shell: bash
       run: |
-        subdir=$(basename $(find ${{ inputs.build-dir }}/doc/docs -mindepth 1 -maxdepth 1 -type d | head -n 1))
+        subdir=$(basename $(find ${{ inputs.build_dir }}/doc/docs -mindepth 1 -maxdepth 1 -type d | head -n 1))
         echo "version=$subdir" >> $GITHUB_OUTPUT
