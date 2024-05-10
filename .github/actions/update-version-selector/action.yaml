@@ -4,12 +4,22 @@ inputs:
   github_token:
     description: 'GitHub token'
     required: true
-  # selector-file-name:
-  #   description: 'HTML file name'
-  #   required: true
-  # selector-id:
-  #   description: 'select element id'
-  #   required: true
+  temp_dir:
+    description: 'Directory where version selector file will be generated'
+    required: false
+    default: 'selector-dir'
+  file_name:
+    description: 'Selector file name'
+    required: false
+    default: 'version_selector.html'
+  selector_id:
+    description: 'select element id'
+    required: false
+    default: 'versionSelector'
+  docs_branch:
+    description: 'Documentation branch'
+    required: false
+    default: 'gh-pages'
 outputs:
   versions_counter:
     description: "Number of existing versions"
@@ -22,24 +32,25 @@ runs:
       id: discover-versions
       shell: bash
       run: |
-        git fetch origin gh-pages
-        dirs=$(git ls-tree --name-only -d origin/gh-pages)
+        git fetch origin ${{ inputs.docs_branch }}
+        dirs=$(git ls-tree --name-only -d origin/${{ inputs.docs_branch }})
         echo "counter=$(echo "$dirs" | wc -l | xargs)" >> $GITHUB_OUTPUT
 
-        mkdir selector-dir
+        mkdir ${{ inputs.temp_dir }}
         # Create HTML
-        echo '<select id="versionSelector">' > selector-dir/version_selector.html
+        echo '<select id="${{ inputs.selector_id }}">' > ${{ inputs.temp_dir }}/${{ inputs.file_name }}
         for dir in $dirs; do
             if [[ "$(basename "$dir")" != .* ]]; then
                 version=$(basename "$dir")
-                echo "    <option value=\"$version\">$version</option>" >> selector-dir/version_selector.html
+                echo "    <option value=\"$version\">$version</option>" >> ${{ inputs.temp_dir }}/${{ inputs.file_name }}
             fi
         done
-        echo '</select>' >> selector-dir/version_selector.html
+        echo '</select>' >> ${{ inputs.temp_dir }}/${{ inputs.file_name }}
 
-    - name: Deploy version_selector.html
+    - name: Deploy version selector
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ inputs.github_token }}
-        publish_dir: selector-dir
+        publish_dir: ${{ inputs.temp_dir }}
+        publish_branch: ${{ inputs.docs_branch }}
         keep_files: true

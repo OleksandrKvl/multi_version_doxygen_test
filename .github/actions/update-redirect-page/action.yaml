@@ -7,13 +7,21 @@ inputs:
   target_url:
     description: 'Redirect target URL'
   temp_dir:
-    description: 'Directory where file is generated'
+    description: 'Directory where redirect file will be generated'
     required: false
     default: 'redirect-dir'
   file_name:
     description: 'Generated file name'
     required: false
     default: 'index.html'
+  destination_dir:
+    description: 'Redirect file destination directory'
+    required: false
+    default: ''
+  docs_branch:
+    description: 'Documentation branch'
+    required: false
+    default: 'gh-pages'
 
 runs:
   using: "composite"
@@ -42,4 +50,6 @@ runs:
         with:
           github_token: ${{ inputs.github_token }}
           publish_dir: ${{ inputs.temp_dir }}
+          destination_dir: ${{ inputs.destination_dir }}
+          publish_branch: ${{ inputs.docs_branch }}
           keep_files: true

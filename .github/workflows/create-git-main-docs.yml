@@ -25,6 +25,9 @@ jobs:
       - name: Build docs
         id: build-docs
         uses: ./.github/actions/build-docs
+        with:
+          cmake_target: 'doc'
+          docs_dir: 'doc/docs'
 
       - name: Deploy docs
         uses: peaceiris/actions-gh-pages@v4
