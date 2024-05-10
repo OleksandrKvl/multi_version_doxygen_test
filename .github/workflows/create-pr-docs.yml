@@ -1,4 +1,4 @@
-name: PR documentation workflow
+name: Create PR documentation
 
 permissions:
   contents: write
