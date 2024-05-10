@@ -17,10 +17,10 @@ runs:
     - name: Discover versions
       shell: bash
       run: |
-        mkdir selector-dir
-        # Enumerate directories and store them in a variable
+        git fetch origin gh-pages
         dirs=$(git ls-tree --name-only -d origin/gh-pages)
-    
+
+        mkdir selector-dir
         # Create HTML
         echo '<select id="versionSelector">' > selector-dir/version_selector.html
         for dir in $dirs; do
