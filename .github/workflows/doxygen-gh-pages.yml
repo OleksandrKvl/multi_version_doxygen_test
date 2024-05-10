@@ -47,24 +47,6 @@ jobs:
           subdir=$(basename $(find $BUILD_DIR/doc/docs -mindepth 1 -maxdepth 1 -type d | head -n 1))
           echo "version=$subdir" >> $GITHUB_OUTPUT
 
-      - name: Update redirect HTML
-        if: github.event_name == 'release'
-        run: |
-          mkdir $BUILD_DIR/doc/docs/redirect
-          cat << EOF > $BUILD_DIR/doc/docs/redirect/index.html
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-              <meta charset="UTF-8">
-              <meta http-equiv="refresh" content="0; url=${{ steps.get-docs-version.outputs.version }}/index.html">
-              <title>Redirecting...</title>
-          </head>
-          <body>
-              <p>If you are not redirected automatically, <a href="${{ steps.get-docs-version.outputs.version }}/index.html">click here</a>.</p>
-          </body>
-          </html>
-          EOF
-
       - name: Deploy release docs
         if: github.event_name == 'release'
         uses: peaceiris/actions-gh-pages@v4
@@ -73,13 +55,12 @@ jobs:
           publish_dir: ${{ env.BUILD_DIR }}/doc/docs/${{ steps.get-docs-version.outputs.version }}
           destination_dir: ${{ steps.get-docs-version.outputs.version }}
 
-      - name: Deploy redirect page
+      - name: Update redirect HTML
         if: github.event_name == 'release'
-        uses: peaceiris/actions-gh-pages@v4
+        uses: ./.github/actions/update-redirect-page
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ${{ env.BUILD_DIR }}/doc/docs/redirect
-          keep_files: true
+          target_url: ${{ steps.get-docs-version.outputs.version }}/index.html
 
       - name: Deploy git-main docs
         if: github.event_name == 'push'
