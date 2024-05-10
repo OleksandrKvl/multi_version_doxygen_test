@@ -45,7 +45,6 @@ runs:
           EOF
 
       - name: Deploy redirect page
-        if: github.event_name == 'release'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ inputs.github_token }}
