@@ -3,13 +3,6 @@ name: Create git-main docs
 permissions:
   contents: write
 
-env:
-  BUILD_DIR: ${{github.workspace}}/build
-  SELECTOR_FILE_NAME: version_selector.html
-  SELECTOR_DIR: ${{github.workspace}}/version_selector
-  SELECTOR_FILE_PATH: $SELECTOR_DIR/$SELECTOR_FILE_NAME
-  SELECTOR_ID: versionSelector
-
 on:
   push:
     branches:
