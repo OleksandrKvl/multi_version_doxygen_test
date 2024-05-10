@@ -17,7 +17,6 @@ runs:
     - name: Pull gh-pages
       uses: actions/checkout@v4
       with:
-        sparse-checkout: .
         ref: gh-pages
         path: gh-pages
 
