@@ -21,13 +21,8 @@ jobs:
         with:
           cmake_target: 'doc'
           docs_dir: 'doc/docs'
-
-      - name: Deploy docs
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build/doc/docs/${{ steps.build-docs.outputs.version }}
           destination_dir: git-main
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update version selector
         id: update-version-selector

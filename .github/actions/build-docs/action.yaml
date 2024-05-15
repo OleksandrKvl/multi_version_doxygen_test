@@ -7,12 +7,19 @@ inputs:
   docs_dir:
     description: 'Path to documentation dir, relative to build_dir'
     required: true
+  github_token:
+    description: 'GitHub token'
+    required: true
   build_dir:
     description: 'Build directory'
     required: false
     default: 'build'
   cmake_configure_args:
     description: 'Additional CMake configure arguments'
+    required: false
+    default: ''
+  destination_dir:
+    description: 'Directory name for deployed docs'
     required: false
     default: ''
 
@@ -47,3 +54,19 @@ runs:
       run: |
         subdir=$(basename $(find ${{ inputs.build_dir }}/${{ inputs.docs_dir }} -mindepth 1 -maxdepth 1 -type d | head -n 1))
         echo "version=$subdir" >> $GITHUB_OUTPUT
+
+    - name: Deploy docs
+      if: ${{ inputs.destination_dir != '' }}
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ inputs.github_token }}
+        publish_dir: ${{ inputs.build_dir }}/${{ inputs.docs_dir }}/${{ steps.get-docs-version.outputs.version }}
+        destination_dir: ${{ inputs.destination_dir }}
+
+    - name: Deploy docs
+      if: ${{ inputs.destination_dir == '' }}
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ inputs.github_token }}
+        publish_dir: ${{ inputs.build_dir }}/${{ inputs.docs_dir }}/${{ steps.get-docs-version.outputs.version }}
+        destination_dir: ${{ steps.get-docs-version.outputs.version }}
