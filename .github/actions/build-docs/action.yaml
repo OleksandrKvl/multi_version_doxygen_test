@@ -22,6 +22,10 @@ inputs:
     description: 'Directory name for deployed docs'
     required: false
     default: ''
+  docs_branch:
+    description: 'Documentation branch'
+    required: false
+    default: 'gh-pages'
 
 outputs:
   version:
@@ -62,6 +66,7 @@ runs:
         github_token: ${{ inputs.github_token }}
         publish_dir: ${{ inputs.build_dir }}/${{ inputs.docs_dir }}/${{ steps.get-docs-version.outputs.version }}
         destination_dir: ${{ inputs.destination_dir }}
+        publish_branch: ${{ inputs.docs_branch }}
 
     - name: Deploy docs
       if: ${{ inputs.destination_dir == '' }}
@@ -70,3 +75,4 @@ runs:
         github_token: ${{ inputs.github_token }}
         publish_dir: ${{ inputs.build_dir }}/${{ inputs.docs_dir }}/${{ steps.get-docs-version.outputs.version }}
         destination_dir: ${{ steps.get-docs-version.outputs.version }}
+        publish_branch: ${{ inputs.docs_branch }}
