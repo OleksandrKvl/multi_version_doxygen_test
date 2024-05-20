@@ -19,7 +19,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ${{github.workspace}}
+          publish_dir: ${{ github.workspace }}
           destination_dir: PR-${{ github.event.pull_request.number }}
 
       - uses: actions/checkout@v4
