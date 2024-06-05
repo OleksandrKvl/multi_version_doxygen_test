@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['section_20in_20group_205_0',['section in group 5',['../group__group5.html',1,'This is a section in group 5'],['../group__group5.html',1,'This is another section in group 5']]]
+  ['pag_5fexample_0',['pag_example',['../pag_example.html',1,'']]],
+  ['page_1',['Main page',['../index.html',1,'']]]
 ];
