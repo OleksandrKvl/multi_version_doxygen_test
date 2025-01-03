@@ -7,6 +7,8 @@ set(DOXYGEN_OUTPUT_DIRECTORY "docs")
 set(DOXYGEN_HTML_HEADER "header.html")
 set(DOXYGEN_HTML_EXTRA_FILES "version_selector_handler.js")
 set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_CURRENT_BINARY_DIR}/main.md")
+set(DOXYGEN_GENERATE_TREEVIEW "NO")
+set(DOXYGEN_DISABLE_INDEX "NO")
 
 doxygen_add_docs(
     doc
